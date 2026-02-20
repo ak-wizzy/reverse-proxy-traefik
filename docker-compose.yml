@@ -5,19 +5,30 @@ services:
     image: traefik:v3.0
     container_name: reverse-proxy-traefik
     restart: unless-stopped
+
     ports:
-      - "8444:443"       # temporary testing port
+      - "8444:443"   # temporary testing port
+
     environment:
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+
     command:
+      # Docker provider
       - "--providers.docker=true"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.version=1.44"
       - "--providers.docker.exposedbydefault=false"
+
+      # EntryPoint
       - "--entrypoints.websecure.address=:443"
+
+      # ACME via Cloudflare DNS challenge
       - "--certificatesresolvers.cloudflare.acme.dnschallenge=true"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
       - "--certificatesresolvers.cloudflare.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json"
-    
+
+      # Observability
       - "--api.dashboard=true"
       - "--log.level=INFO"
       - "--accesslog=true"
@@ -25,6 +36,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-certs:/letsencrypt
+
     networks:
       - reverse-proxy
 
