@@ -16,6 +16,7 @@ services:
       # Docker provider
       - "--providers.docker=true"
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.network=reverse-proxy"
       - "--providers.docker.exposedbydefault=false"
 
       # EntryPoint
