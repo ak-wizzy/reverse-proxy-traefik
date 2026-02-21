@@ -26,8 +26,8 @@ services:
       - "traefik.http.middlewares.security-headers.headers.referrerPolicy=no-referrer-when-downgrade"
 
     # Rate Limit Middleware
-      - "traefik.http.middlewares.rate-limit.ratelimit.average=100"
-      - "traefik.http.middlewares.rate-limit.ratelimit.burst=50"
+      - "traefik.http.middlewares.rate-limit.ratelimit.average=10"
+      - "traefik.http.middlewares.rate-limit.ratelimit.burst=5"
 
     # Middleware Chain
       - "traefik.http.middlewares.secured-chain.chain.middlewares=security-headers,rate-limit"
