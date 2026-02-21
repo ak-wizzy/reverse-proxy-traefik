@@ -16,7 +16,9 @@ services:
     labels:
       - "traefik.enable=true"
 
-    # Security Headers Middleware
+      # ======================
+      # Security Headers Middleware
+      # ======================
       - "traefik.http.middlewares.security-headers.headers.stsSeconds=31536000"
       - "traefik.http.middlewares.security-headers.headers.stsIncludeSubdomains=true"
       - "traefik.http.middlewares.security-headers.headers.stsPreload=true"
@@ -26,12 +28,30 @@ services:
       - "traefik.http.middlewares.security-headers.headers.frameDeny=true"
       - "traefik.http.middlewares.security-headers.headers.referrerPolicy=no-referrer-when-downgrade"
 
-    # Rate Limit Middleware
+      # ======================
+      # Rate Limit Middleware
+      # ======================
       - "traefik.http.middlewares.rate-limit.ratelimit.average=100"
       - "traefik.http.middlewares.rate-limit.ratelimit.burst=50"
 
-    # Middleware Chain
+      # ======================
+      # Middleware Chain
+      # ======================
       - "traefik.http.middlewares.secured-chain.chain.middlewares=security-headers,rate-limit"
+
+      # ======================
+      # Dashboard Router
+      # ======================
+      - "traefik.http.routers.dashboard.rule=Host(`route.aktechnoservices.com`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls.certresolver=cloudflare"
+      - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker"
+
+      # ======================
+      # BasicAuth Middleware
+      # ======================
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
 
     command:
       # Docker provider
@@ -49,11 +69,11 @@ services:
       - "--accesslog.fields.headers.names.Host=keep"
       - "--log.level=INFO"
 
-      # Redirect
+      # Redirect HTTP → HTTPS
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
 
-      # EntryPoint
+      # EntryPoints
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
 
@@ -63,20 +83,9 @@ services:
       - "--certificatesresolvers.cloudflare.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json"
 
-      # Observability
+      # Dashboard
       - "--api.dashboard=true"
       - "--api.insecure=false"
-      - "traefik.enable=true"
-
-      # Dashboard Router
-      - "traefik.http.routers.dashboard.rule=Host(`route.aktechnoservices.com`)"
-      - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.tls.certresolver=cloudflare"
-      - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker"
-
-      # BasicAuth Middleware
-      - "traefik.http.middlewares.dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
