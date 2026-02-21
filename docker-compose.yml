@@ -40,6 +40,15 @@ services:
       - "--providers.docker.network=reverse-proxy"
       - "--providers.docker.exposedbydefault=false"
 
+      # Logging
+      - "--accesslog=true"
+      - "--accesslog.format=json"
+      - "--accesslog.fields.defaultmode=keep"
+      - "--accesslog.fields.headers.defaultmode=drop"
+      - "--accesslog.fields.headers.names.X-Forwarded-For=keep"
+      - "--accesslog.fields.headers.names.Host=keep"
+
+      # Redirect
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
 
