@@ -47,6 +47,7 @@ services:
       - "--accesslog.fields.headers.defaultmode=drop"
       - "--accesslog.fields.headers.names.X-Forwarded-For=keep"
       - "--accesslog.fields.headers.names.Host=keep"
+      - "--log.level=INFO"
 
       # Redirect
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
@@ -64,7 +65,7 @@ services:
 
       # Observability
       - "--api.dashboard=true"
-      - "--log.level=INFO"
+     
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
