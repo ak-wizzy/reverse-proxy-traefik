@@ -65,7 +65,18 @@ services:
 
       # Observability
       - "--api.dashboard=true"
-     
+      - "--api.insecure=false"
+      - "traefik.enable=true"
+
+      # Dashboard Router
+      - "traefik.http.routers.traefik.rule=Host(`route.aktechnoservices.com`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik.middlewares=dashboard-auth@docker"
+
+      # BasicAuth Middleware
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
