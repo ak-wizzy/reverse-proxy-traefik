@@ -69,11 +69,11 @@ services:
       - "traefik.enable=true"
 
       # Dashboard Router
-      - "traefik.http.routers.traefik.rule=Host(`route.aktechnoservices.com`)"
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
-      - "traefik.http.routers.traefik.middlewares=dashboard-auth@docker"
+      - "traefik.http.routers.dashboard.rule=Host(`route.aktechnoservices.com`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls.certresolver=cloudflare"
+      - "traefik.http.routers.dashboard.middlewares=dashboard-auth@docker"
 
       # BasicAuth Middleware
       - "traefik.http.middlewares.dashboard-auth.basicauth.users=${TRAEFIK_DASHBOARD_AUTH}"
